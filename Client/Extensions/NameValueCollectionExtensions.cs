@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Web;
 
-namespace System.Collections.Specialized
+namespace TinyHttp
 {
     public static class NameValueCollectionExtensions
     {

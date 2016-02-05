@@ -1,27 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace TinyHttp
 {
-    public class OAuthAccessToken
+    public abstract class OAuthTokenBase
     {
+        public virtual DateTime CreatedOn { get; set; } = DateTime.Now;
 
-        private DateTime _CreatedOn = DateTime.Now;
-        public DateTime CreatedOn
-        {
-            get { return _CreatedOn; }
-            set { _CreatedOn = value; }
-        }
-        public DateTimeOffset ExpireDate
-        {
-            get
-            {
-                return CreatedOn.AddSeconds(expires_in);
-            }
-        }
-        public bool IsExpired
+        public virtual bool IsExpired
         {
             get
             {
@@ -29,11 +21,19 @@ namespace TinyHttp
             }
         }
 
+        public virtual DateTimeOffset ExpireDate
+        {
+            get
+            {
+                return CreatedOn.AddSeconds(expires_in);
+            }
+        }
+
         private NameValueCollection _AuthorizationHeader = null;
 
         [XmlIgnore]
         [IgnoreDataMember]
-        public NameValueCollection AuthorizationHeader
+        public virtual NameValueCollection AuthorizationHeader
         {
             get
             {
@@ -46,14 +46,20 @@ namespace TinyHttp
             }
         }
 
-
-
-
         public string access_token { get; set; }
 
         public string refresh_token { get; set; }
         public string token_type { get; set; }
-        public double expires_in { get; set; }
+        public double expires_in { get; set; } = 31536000D;
+    }
 
+    public interface IOAuthToken
+    {
+        string access_token { get; set; }
+        string refresh_token { get; set; }
+        string token_type { get; set; }
+        double expires_in { get; set; }
+
+        NameValueCollection AuthorizationHeader { get; }
     }
 }

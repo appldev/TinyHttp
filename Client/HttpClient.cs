@@ -20,7 +20,49 @@ namespace TinyHttp
             Delete
         }
 
+        public enum RequestContentTypes
+        {
+            Json,
+            Xml,
+            Text,
+            Html,
+            Form
+        }
+
+        internal static string GetContentType(RequestContentTypes requestContent)
+        {
+            switch (requestContent)
+            {
+                case HttpClient.RequestContentTypes.Json:
+                    return "application/json";
+                case HttpClient.RequestContentTypes.Xml:
+                    return "application/xml";
+                case HttpClient.RequestContentTypes.Text:
+                    return "text/plain";
+                case HttpClient.RequestContentTypes.Html:
+                    return "text/html";
+                case RequestContentTypes.Form:
+                    return "application/x-www-form-urlencoded; charset=UTF-8";
+                default:
+                    throw new ArgumentException(string.Format("The content type {0} is not supported", requestContent), "requestContent");
+            }
+        }
+
         public static string UserAgent { get; set; } = string.Format("TinyHttp .NET: {0} OS: {1}", Environment.Version.ToString(), Environment.OSVersion.ToString());
+
+        public static HttpResponse<TOAuthToken> OAuthPasswordLogin<TOAuthToken>(string Url, string Username, string Password) where TOAuthToken : IOAuthToken
+        {
+            return OAuthPasswordLoginAsync<TOAuthToken>(Url, Username, Password).Result;
+        }
+
+        public static async Task<HttpResponse<TOAuthToken>> OAuthPasswordLoginAsync<TOAuthToken>(string Url, string Username, string Password) where TOAuthToken : IOAuthToken
+        {
+            NameValueCollection col = new NameValueCollection();
+            col.Add("username", Username);
+            col.Add("password", Password);
+            return await OAuthTokenAsync<TOAuthToken>(Url, "password", col);
+        }
+
 
         public static HttpResponse<OAuthAccessToken> OAuthPasswordLogin(string Url, string Username, string Password)
         {
@@ -52,6 +94,18 @@ namespace TinyHttp
             string s = string.Format("grant_type={0}&", grantType);
             s = parameters.AppendAsQueryString(s);
             return ExecuteAsync<OAuthAccessToken>(Url, RequestTypes.Post, null, null, null, s, "application/x-www-form-urlencoded; charset=UTF-8");
+        }
+
+        private static Task<HttpResponse<TOAuthToken>> OAuthTokenAsync<TOAuthToken>(string Url, string grantType, NameValueCollection parameters) where TOAuthToken : IOAuthToken
+        {
+            string s = string.Format("grant_type={0}&", grantType);
+            s = parameters.AppendAsQueryString(s);
+
+            return CreateWriteRequest(Url)
+                .WithContent<string>(RequestContentTypes.Form, s)
+                .ExecuteAsync<TOAuthToken>();
+
+            // return ExecuteAsync<TOAuthToken>(Url, RequestTypes.Post, null, null, null, s, "application/x-www-form-urlencoded; charset=UTF-8");
         }
 
         public static Task<HttpResponse<T>> DeleteAsync<T, S>(string Url, S Id, OAuthAccessToken Auth = null)
@@ -163,8 +217,8 @@ namespace TinyHttp
                 {
                     foreach (FileUpload file in Files)
                     {
-                        sw.Write(string.Format(FileDataFormat, file.ParameterName, file.FileName, file.ContentType, System.Text.Encoding.ASCII.GetString(file.Content)));
-                        ss.Write(string.Format(FileDataFormat, file.ParameterName, file.FileName, file.ContentType, System.Text.Encoding.ASCII.GetString(file.Content)));
+                        sw.Write(string.Format(FileDataFormat, file.ParameterName, file.FileName, file.ContentType, System.Text.Encoding.UTF8.GetString(file.Content)));
+                        ss.Write(string.Format(FileDataFormat, file.ParameterName, file.FileName, file.ContentType, System.Text.Encoding.UTF8.GetString(file.Content)));
                         // sw.Flush();
                         // sw.Write(sw.NewLine);
                         // rs.Write(file.Content, 0, file.Content.Length);
@@ -183,6 +237,41 @@ namespace TinyHttp
 
             return request;   
 
+        }
+
+        #region CRUD Request creation
+
+        public static HttpWebRequest CreateReadRequest(string url, NameValueCollection queryString = null)
+        {
+            return CreateRequest(url, RequestTypes.Get, queryString);
+        }
+
+        public static HttpWebRequest CreateWriteRequest(string url, NameValueCollection queryString = null)
+        {
+            return CreateRequest(url, RequestTypes.Post, queryString);
+        }
+
+        public static HttpWebRequest CreateUpdateRequest(string url, NameValueCollection queryString = null)
+        {
+            return CreateRequest(url, RequestTypes.Put, queryString);
+        }
+
+        public static HttpWebRequest CreateDeleteRequest(string url, NameValueCollection queryString = null)
+        {
+            return CreateRequest(url, RequestTypes.Delete, queryString);
+        }
+
+        #endregion  
+
+        public static HttpWebRequest CreateRequest(string url, RequestTypes requestType, NameValueCollection queryString = null)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            if (queryString != null)
+            {
+                url = queryString.AppendAsQueryString(url);
+            }
+            request.Method = requestType.ToString();
+            return request;
         }
 
         private static HttpWebRequest CreateRequest(string Url, RequestTypes RequestType, NameValueCollection QueryString = null, OAuthAccessToken Auth = null, ICredentials Credentials = null, string Payload = null, string ContentType = "application/json")
@@ -275,6 +364,7 @@ namespace TinyHttp
 
         private static T ParseResponseData<T>(string responseData, string contentType)
         {
+
             if (string.IsNullOrEmpty(responseData))
             {
                 return default(T);
@@ -285,11 +375,11 @@ namespace TinyHttp
             }
             else
             {
-                if (contentType.Equals("application/json"))
+                if (contentType.StartsWith("application/json", StringComparison.OrdinalIgnoreCase))
                 {
                     return JsonConvert.DeserializeObject<T>(responseData, new JsonSerializerSettings() { PreserveReferencesHandling = PreserveReferencesHandling.All, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
                 }
-                if (new List<string>() { "application/xml", "application/rss+xml", "text/xml" }.Any(x => x.Equals(contentType, StringComparison.OrdinalIgnoreCase)))
+                if (new List<string>() { "application/xml", "application/rss+xml", "text/xml" }.Any(x => x.StartsWith(contentType, StringComparison.OrdinalIgnoreCase)))
                 {
                     System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(T));
                     using (StringReader sr = new StringReader(responseData))
