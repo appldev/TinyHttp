@@ -39,9 +39,7 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -56,9 +54,21 @@
     <Compile Include="Extensions\HttpWebRequestExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="nuspec\build-nuget-package.bat" />
+    <None Include="nuspec\TinyHttp.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="nuspec\nuget.exe" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>rmdir $(ProjectDir)content /S /Q
+rmdir $(ProjectDir)lib /S /Q
+mkdir $(ProjectDir)content\TinySql
+mkdir $(ProjectDir)lib\net452
+copy $(TargetDir)TinyHttp.dll  $(ProjectDir)lib\net452 /Y</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
