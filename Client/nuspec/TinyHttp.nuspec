@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>TinyHttp</id>
-    <version>0.1</version>
+    <version>1.0-rc1</version>
     <title>TinyHttp</title>
     <authors>Michael Randrup</authors>
     <owners>michaelrandrup</owners>
@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Light-weight http client for making CRUD and REST calls via http in .NET</description>
     <releaseNotes>
-      Version 0.1 is the first working release.
+      Visit GitHub for usage examples
     </releaseNotes>
     <language>en-US</language>
     <tags>Http REST CRUD C#</tags>

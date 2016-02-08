@@ -14,10 +14,10 @@ namespace TinyHttp
     {
         public enum RequestTypes
         {
-            Get,
-            Post,
-            Put,
-            Delete
+            GET,
+            POST,
+            PUT,
+            DELETE
         }
 
         public enum RequestContentTypes
@@ -93,7 +93,7 @@ namespace TinyHttp
         {
             string s = string.Format("grant_type={0}&", grantType);
             s = parameters.AppendAsQueryString(s);
-            return ExecuteAsync<OAuthAccessToken>(Url, RequestTypes.Post, null, null, null, s, "application/x-www-form-urlencoded; charset=UTF-8");
+            return ExecuteAsync<OAuthAccessToken>(Url, RequestTypes.POST, null, null, null, s, "application/x-www-form-urlencoded; charset=UTF-8");
         }
 
         private static Task<HttpResponse<TOAuthToken>> OAuthTokenAsync<TOAuthToken>(string Url, string grantType, NameValueCollection parameters) where TOAuthToken : IOAuthToken
@@ -110,36 +110,36 @@ namespace TinyHttp
 
         public static Task<HttpResponse<T>> DeleteAsync<T, S>(string Url, S Id, OAuthAccessToken Auth = null)
         {
-            return ExecuteAsync<T>(Url + "/" + Id.ToString(), RequestTypes.Delete, null, Auth);
+            return ExecuteAsync<T>(Url + "/" + Id.ToString(), RequestTypes.DELETE, null, Auth);
         }
 
         public static Task<HttpResponse<T>> DetailsAsync<T>(string Url, string Id, OAuthAccessToken Auth = null)
         {
 
-            return ExecuteAsync<T>(Url + "/" + Id, RequestTypes.Get, null, Auth);
+            return ExecuteAsync<T>(Url + "/" + Id, RequestTypes.GET, null, Auth);
         }
 
         public static HttpResponse<T> Details<T>(string Url, string Id, OAuthAccessToken Auth = null)
         {
-            return Execute<T>(Url, RequestTypes.Get, new NameValueCollection() { { "Id", Id } }, Auth);
+            return Execute<T>(Url, RequestTypes.GET, new NameValueCollection() { { "Id", Id } }, Auth);
         }
 
 
         public static HttpResponse<T> Get<T>(string Url, OAuthAccessToken Auth = null)
         {
-            return Execute<T>(Url, RequestTypes.Get, null, Auth);
+            return Execute<T>(Url, RequestTypes.GET, null, Auth);
         }
         public static Task<HttpResponse<T>> GetAsync<T>(string Url, OAuthAccessToken Auth = null)
         {
-            return ExecuteAsync<T>(Url, RequestTypes.Get, null, Auth);
+            return ExecuteAsync<T>(Url, RequestTypes.GET, null, Auth);
         }
         public static HttpResponse<T> Post<T>(string Url, NameValueCollection Data, OAuthAccessToken Auth = null)
         {
-            return Execute<T>(Url, RequestTypes.Post, Data, Auth);
+            return Execute<T>(Url, RequestTypes.POST, Data, Auth);
         }
         public static Task<HttpResponse<T>> PostAsync<T>(string Url, NameValueCollection Data, OAuthAccessToken Auth = null)
         {
-            return ExecuteAsync<T>(Url, RequestTypes.Post, Data, Auth);
+            return ExecuteAsync<T>(Url, RequestTypes.POST, Data, Auth);
         }
 
 
@@ -155,7 +155,7 @@ namespace TinyHttp
         }
         public static async Task<HttpResponse<T>> UpdateAsync<T>(string Url, OAuthAccessToken Auth, string Object)
         {
-            return await ExecuteAsync<T>(Url, RequestTypes.Put, null, Auth, null, Object);
+            return await ExecuteAsync<T>(Url, RequestTypes.PUT, null, Auth, null, Object);
         }
         public static HttpResponse<T> Create<T>(string Url, OAuthAccessToken Auth, string Object)
         {
@@ -163,7 +163,7 @@ namespace TinyHttp
         }
         public static async Task<HttpResponse<T>> CreateAsync<T>(string Url, OAuthAccessToken Auth, string Object)
         {
-            return await ExecuteAsync<T>(Url, RequestTypes.Post, null, Auth, null, Object);
+            return await ExecuteAsync<T>(Url, RequestTypes.POST, null, Auth, null, Object);
         }
         public static HttpResponse<T> Execute<T>(string Url, RequestTypes RequestType, NameValueCollection QueryString = null, OAuthAccessToken Auth = null, ICredentials Credentials = null, string Payload = null, string ContentType = "application/json")
         {
@@ -243,22 +243,22 @@ namespace TinyHttp
 
         public static HttpWebRequest CreateReadRequest(string url, NameValueCollection queryString = null)
         {
-            return CreateRequest(url, RequestTypes.Get, queryString);
+            return CreateRequest(url, RequestTypes.GET, queryString);
         }
 
         public static HttpWebRequest CreateWriteRequest(string url, NameValueCollection queryString = null)
         {
-            return CreateRequest(url, RequestTypes.Post, queryString);
+            return CreateRequest(url, RequestTypes.POST, queryString);
         }
 
         public static HttpWebRequest CreateUpdateRequest(string url, NameValueCollection queryString = null)
         {
-            return CreateRequest(url, RequestTypes.Put, queryString);
+            return CreateRequest(url, RequestTypes.PUT, queryString);
         }
 
         public static HttpWebRequest CreateDeleteRequest(string url, NameValueCollection queryString = null)
         {
-            return CreateRequest(url, RequestTypes.Delete, queryString);
+            return CreateRequest(url, RequestTypes.DELETE, queryString);
         }
 
         #endregion  
@@ -285,7 +285,7 @@ namespace TinyHttp
             request.Method = RequestType.ToString().ToUpper();
             request.ContentType = ContentType;
             request.UserAgent = UserAgent;
-            if (RequestType != RequestTypes.Get)
+            if (RequestType != RequestTypes.GET)
             {
                 if (!string.IsNullOrEmpty(Payload))
                 {

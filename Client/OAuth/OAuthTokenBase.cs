@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 
 namespace TinyHttp
 {
-    public abstract class OAuthTokenBase
+    public abstract class OAuthTokenBase : IOAuthToken
     {
         public virtual DateTime CreatedOn { get; set; } = DateTime.Now;
 

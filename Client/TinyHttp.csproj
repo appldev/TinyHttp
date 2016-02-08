@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\DataObject.cs" />
     <Compile Include="FileUpload.cs" />
     <Compile Include="HttpClient.cs" />
     <Compile Include="HttpResponse.cs" />

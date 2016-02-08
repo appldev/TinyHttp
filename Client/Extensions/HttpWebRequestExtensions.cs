@@ -13,6 +13,7 @@ namespace TinyHttp
 {
     public static class HttpWebRequestExtensions
     {
+        
         public static HttpWebRequest AuthorizeAs(this HttpWebRequest request, OAuthAccessToken auth)
         {
             if (request.Headers.AllKeys.Any(x => x.Equals("Authorization")))
@@ -46,6 +47,12 @@ namespace TinyHttp
         public static HttpWebRequest SetTimeout(this HttpWebRequest request, TimeSpan timeout)
         {
             request.ContinueTimeout = request.ReadWriteTimeout = request.Timeout = (int)timeout.TotalMilliseconds;
+            return request;
+        }
+
+        public static HttpWebRequest SetTimeout(this HttpWebRequest request, int seconds)
+        {
+            request.ContinueTimeout = request.ReadWriteTimeout = request.Timeout = (seconds * 1000);
             return request;
         }
 
