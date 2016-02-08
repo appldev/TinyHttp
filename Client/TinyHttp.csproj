@@ -64,11 +64,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>rmdir $(ProjectDir)content /S /Q
-rmdir $(ProjectDir)lib /S /Q
-mkdir $(ProjectDir)content\TinySql
-mkdir $(ProjectDir)lib\net452
-copy $(TargetDir)TinyHttp.dll  $(ProjectDir)lib\net452 /Y</PostBuildEvent>
+    <PostBuildEvent>rmdir $(ProjectDir)nuspec\content /S /Q
+rmdir $(ProjectDir)nuspec\lib /S /Q
+mkdir $(ProjectDir)nuspec\content
+mkdir $(ProjectDir)nuspec\lib\net45
+copy $(TargetDir)TinyHttp.dll  $(ProjectDir)nuspec\lib\net45 /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

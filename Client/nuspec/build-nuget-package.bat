@@ -1,2 +1,2 @@
-nuget.exe pack TinyHttp.nuspec -NonInteractive -Verbosity quiet
+nuget.exe pack TinyHttp.nuspec
 Ver > nul
