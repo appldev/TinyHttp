@@ -101,7 +101,7 @@ namespace TinyHttp
             string s = string.Format("grant_type={0}&", grantType);
             s = parameters.AppendAsQueryString(s);
 
-            return CreateWriteRequest(Url)
+            return GetCreateRequest(Url)
                 .WithContent<string>(RequestContentTypes.Form, s)
                 .ExecuteAsync<TOAuthToken>();
 
@@ -170,7 +170,12 @@ namespace TinyHttp
             return ExecuteAsync<T>(Url, RequestType, QueryString, Auth, Credentials, Payload, ContentType).Result;
         }
 
-        public static HttpWebRequest CreateFormDataRequest(string Url, NameValueCollection FormData = null, List<FileUpload> Files = null, OAuthAccessToken Auth = null, ICredentials Credentials = null)
+        public static HttpResponse<T> Execute<T>(HttpWebRequest request)
+        {
+            return ExecuteAsync<T>(request).Result;
+        }
+
+        public static HttpWebRequest GetFormDataRequest(string Url, NameValueCollection FormData = null, List<FileUpload> Files = null, OAuthAccessToken Auth = null, ICredentials Credentials = null)
         {
             string Boundary = "------------------------" + DateTime.Now.Ticks.ToString("x");
             string FormDataFormat = "--" + Boundary + Environment.NewLine +
@@ -241,29 +246,31 @@ namespace TinyHttp
 
         #region CRUD Request creation
 
-        public static HttpWebRequest CreateReadRequest(string url, NameValueCollection queryString = null)
+        public static HttpWebRequest GetReadRequest(string url, NameValueCollection queryString = null)
         {
-            return CreateRequest(url, RequestTypes.GET, queryString);
+            return GetRequest(url, RequestTypes.GET, queryString);
         }
 
-        public static HttpWebRequest CreateWriteRequest(string url, NameValueCollection queryString = null)
+        public static HttpWebRequest GetCreateRequest(string url, NameValueCollection queryString = null)
         {
-            return CreateRequest(url, RequestTypes.POST, queryString);
+            return GetRequest(url, RequestTypes.POST, queryString);
         }
 
-        public static HttpWebRequest CreateUpdateRequest(string url, NameValueCollection queryString = null)
+        public static HttpWebRequest GetUpdateRequest(string url, NameValueCollection queryString = null)
         {
-            return CreateRequest(url, RequestTypes.PUT, queryString);
+            return GetRequest(url, RequestTypes.PUT, queryString);
         }
 
-        public static HttpWebRequest CreateDeleteRequest(string url, NameValueCollection queryString = null)
+        public static HttpWebRequest GetDeleteRequest(string url, NameValueCollection queryString = null)
         {
-            return CreateRequest(url, RequestTypes.DELETE, queryString);
+            return GetRequest(url, RequestTypes.DELETE, queryString);
         }
 
-        #endregion  
+        #endregion
 
-        public static HttpWebRequest CreateRequest(string url, RequestTypes requestType, NameValueCollection queryString = null)
+        #region General Requestion creation
+
+        public static HttpWebRequest GetRequest(string url, RequestTypes requestType, NameValueCollection queryString = null)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             if (queryString != null)
@@ -274,7 +281,7 @@ namespace TinyHttp
             return request;
         }
 
-        private static HttpWebRequest CreateRequest(string Url, RequestTypes RequestType, NameValueCollection QueryString = null, OAuthAccessToken Auth = null, ICredentials Credentials = null, string Payload = null, string ContentType = "application/json")
+        private static HttpWebRequest GetRequest(string Url, RequestTypes RequestType, NameValueCollection QueryString = null, OAuthAccessToken Auth = null, ICredentials Credentials = null, string Payload = null, string ContentType = "application/json")
         {
             if (QueryString != null)
             {
@@ -310,6 +317,8 @@ namespace TinyHttp
             }
             return request;
         }
+
+        #endregion 
 
         public static async Task<HttpResponse<T>> ExecuteAsync<T>(HttpWebRequest request)
         {
@@ -358,7 +367,7 @@ namespace TinyHttp
 
         public static async Task<HttpResponse<T>> ExecuteAsync<T>(string Url, RequestTypes RequestType, NameValueCollection QueryString = null, OAuthAccessToken Auth = null, ICredentials Credentials = null, string Payload = null, string ContentType = "application/json")
         {
-            HttpWebRequest request = CreateRequest(Url, RequestType, QueryString, Auth, Credentials, Payload, ContentType);
+            HttpWebRequest request = GetRequest(Url, RequestType, QueryString, Auth, Credentials, Payload, ContentType);
             return await ExecuteAsync<T>(request);
         }
 

@@ -12,6 +12,13 @@ namespace TinyHttp
     /// </summary>
     public class DataObject : DynamicObject
     {
+        public DataObject() { }
+
+        public DataObject(IDictionary<string, object> dictionary)
+        {
+            _dict = new Dictionary<string, object>(dictionary, StringComparer.OrdinalIgnoreCase);
+        }
+
         private Dictionary<string, object> _dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         #region DynamicObject overrides

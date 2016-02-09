@@ -21,7 +21,7 @@ namespace TinyHttpTests
             data.title = "Test title";
             data.body = "Test body";
             data.userId = 1;
-            HttpResponse<DataObject> response = await HttpClient.CreateRequest(BaseUrl + "/posts", HttpClient.RequestTypes.POST)
+            HttpResponse<DataObject> response = await HttpClient.GetCreateRequest(BaseUrl + "/posts")
                 .WithContent<object>(HttpClient.RequestContentTypes.Json,(object)data)
                 .ExecuteAsync<DataObject>();
 
@@ -40,7 +40,7 @@ namespace TinyHttpTests
             data.body = "Test body";
             data.userId = 1;
             data.id = 22;
-            HttpResponse<DataObject> response = await HttpClient.CreateRequest(BaseUrl + "/posts/22", HttpClient.RequestTypes.PUT)
+            HttpResponse<DataObject> response = await HttpClient.GetUpdateRequest(BaseUrl + "/posts/22")
                 .WithContent<object>(HttpClient.RequestContentTypes.Json, (object)data)
                 .ExecuteAsync<DataObject>();
 
@@ -53,7 +53,7 @@ namespace TinyHttpTests
         [TestMethod]
         public async Task TestDelete()
         {
-            HttpResponse<DataObject> response = await HttpClient.CreateRequest(BaseUrl + "/posts/5", HttpClient.RequestTypes.DELETE)
+            HttpResponse<DataObject> response = await HttpClient.GetDeleteRequest(BaseUrl + "/posts/5")
                 .WithContent(HttpClient.RequestContentTypes.Json)
                 .ExecuteAsync<DataObject>();
 
@@ -64,7 +64,7 @@ namespace TinyHttpTests
         [TestMethod]
         public async Task TestRead()
         {
-            HttpResponse<List<DataObject>> response = await HttpClient.CreateRequest(BaseUrl + "/posts", HttpClient.RequestTypes.GET)
+            HttpResponse<List<DataObject>> response = await HttpClient.GetReadRequest(BaseUrl + "/posts")
                 .WithContent(HttpClient.RequestContentTypes.Json)
                 .ExecuteAsync<List<DataObject>>();
 
@@ -75,7 +75,7 @@ namespace TinyHttpTests
         [TestMethod]
         public async Task TestReadOne()
         {
-            HttpResponse<DataObject> response = await HttpClient.CreateRequest(BaseUrl + "/posts/3", HttpClient.RequestTypes.GET)
+            HttpResponse<DataObject> response = await HttpClient.GetReadRequest(BaseUrl + "/posts/3")
                 .WithContent(HttpClient.RequestContentTypes.Json)
                 .ExecuteAsync<DataObject>();
 
@@ -86,7 +86,7 @@ namespace TinyHttpTests
         [TestMethod]
         public async Task TestReadFilter()
         {
-            HttpResponse<List<DataObject>> response = await HttpClient.CreateRequest(BaseUrl + "/posts", HttpClient.RequestTypes.GET,
+            HttpResponse<List<DataObject>> response = await HttpClient.GetReadRequest(BaseUrl + "/posts",
                 new NameValueCollection()
                 {
                     {"userId","1" }
