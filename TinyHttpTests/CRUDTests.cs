@@ -8,11 +8,36 @@ using System.Collections.Specialized;
 
 namespace TinyHttpTests
 {
+    public class GeoIPModel
+    {
+        // {"ip":"79.142.76.176","country_code":"SE","country_name":"Sweden","region_code":"AB","region_name":"Stockholm","city":"Stockholm","zip_code":"173 11",
+        // "time_zone":"Europe/Stockholm","latitude":59.3333,"longitude":18.05,"metro_code":0}
+        public string ip { get; set; }
+        public string country_code { get; set; }
+        public string country_name { get; set; }
+        public string region_code { get; set; }
+        public string region_name { get; set; }
+        public string city { get; set; }
+        public string zip_code { get; set; }
+        public string time_zone { get; set; }
+        public decimal latitude { get; set; }
+        public decimal longitude { get; set; }
+        public int metro_code { get; set; }
+    }
+
     [TestClass]
     public class CRUDTests
     {
-        public static readonly string BaseUrl = "http://jsonplaceholder.typicode.com";
+        [TestMethod]
+        public void TestGeoIP()
+        {
+            HttpResponse<GeoIPModel> response = TinyHttp.HttpClient.Execute<GeoIPModel>(string.Format("http://freegeoip.net/json/{0}", "79.142.76.176"), HttpClient.RequestTypes.GET);
+            Assert.IsTrue(response.ResponseStatus == System.Net.HttpStatusCode.OK);
+            Console.WriteLine(response.ResponseData.country_name);
+        }
 
+
+        public static readonly string BaseUrl = "http://jsonplaceholder.typicode.com";
 
         [TestMethod]
         public async Task TestCreate()
